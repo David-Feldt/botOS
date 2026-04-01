@@ -1,16 +1,17 @@
-# pipbot
+# botOS
 
 A framework for building modular robotics software on Raspberry Pi.
 
 Components communicate through typed channels over a central TCP router.
-You declare ports on your classes, wire them to paths in `config.yaml`,
-and `bot run` handles the rest.
+You declare channels in `config.yaml` and `bot run` handles the rest.
 
 ## Install
 
 ```bash
-pip install -e .
+./install.sh
 ```
+
+This installs to `/opt/bot`, links the `bot` command, and sets up shell integration (pip interception, `bot .` shorthand).
 
 ## Quickstart
 
@@ -24,27 +25,29 @@ This creates:
 ```
 myrobot/
 ├── config.yaml          # declares components and wiring
-├── main.py              # entry point
 ├── components/
 │   ├── __init__.py
-│   └── example.py       # sample sensor + actuator
-└── .bot/                # build artifacts and logs (gitignored)
+│   └── example.py       # sample component
+└── .botos/              # venv, build artifacts (gitignored)
 ```
 
 ### Write a component
 
 ```python
 import asyncio
-from pipbot import Component, SensorPort
+import botos
 
-class Thermometer(Component):
-    temperature = SensorPort()  # produces sensor data
 
-    async def start(self):
-        while True:
-            reading = await self.read_sensor()
-            await self.temperature.write({"celsius": reading})
-            await asyncio.sleep(1.0)
+async def main():
+    counter = 0
+    while True:
+        await botos.publish("/s/example/data", {"count": counter})
+        counter += 1
+        await asyncio.sleep(1.0)
+
+
+if __name__ == "__main__":
+    botos.run(main())
 ```
 
 ### Wire it in config.yaml
@@ -55,18 +58,23 @@ router:
   port: 5555
 
 components:
-  therm:
-    module: components.thermometer
-    class: Thermometer
-    wiring:
-      temperature: /s/temperature/reading
+  example:
+    file: components/example.py
+    groups: [sensors]
+    channels:
+      /s/example/data: write
 ```
 
 ### Run
 
 ```bash
-bot run
+bot run            # run all components
+bot run sensors    # run only a specific group
 ```
+
+## Installing Python packages
+
+When you run `pip install` inside a botOS project, the shell integration will prompt you to install into the project's own environment (`.botos/venv/`). Components automatically use this environment.
 
 ## Channel types
 
@@ -77,7 +85,9 @@ bot run
 
 ## CLI
 
-| Command    | Description                          |
-|------------|--------------------------------------|
-| `bot init` | Scaffold a new project               |
-| `bot run`  | Boot the router and run components   |
+| Command         | Description                          |
+|-----------------|--------------------------------------|
+| `bot init`      | Scaffold a new project               |
+| `bot run`       | Boot the router and run components   |
+| `bot run group` | Run only components in a group       |
+| `bot .`         | Reload shell setup                   |

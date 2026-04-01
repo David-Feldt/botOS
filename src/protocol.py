@@ -1,7 +1,6 @@
 """Length-prefixed JSON framing over TCP.
 
 Wire format: [4-byte big-endian length][JSON payload]
-Shared by both the router and component connections.
 """
 
 import asyncio
@@ -10,7 +9,7 @@ import struct
 
 HEADER_FORMAT = "!I"
 HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
-MAX_MESSAGE_SIZE = 16 * 1024 * 1024  # 16 MB safety limit
+MAX_MESSAGE_SIZE = 16 * 1024 * 1024  # 16 MB
 
 
 async def read_message(reader: asyncio.StreamReader) -> dict:
