@@ -12,7 +12,7 @@ import logging
 
 from protocol import close_writer, read_message, write_message
 
-log = logging.getLogger("botos.router")
+log = logging.getLogger("bot.router")
 
 VALID_PREFIXES = ("/s/", "/c/")
 

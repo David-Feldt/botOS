@@ -1,13 +1,13 @@
 """Client library for botOS components.
 
 Usage in a component file:
-    import botos, asyncio
+    import bot, asyncio
 
     async def main():
-        await botos.publish("/s/example/data", {"count": 1})
+        await bot.publish("/s/example/data", {"count": 1})
 
     if __name__ == "__main__":
-        botos.run(main())
+        bot.run(main())
 """
 
 import asyncio

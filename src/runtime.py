@@ -83,7 +83,7 @@ class Runtime:
             env["BOTOS_CHANNELS"] = json.dumps(channels)
             env["PYTHONPATH"] = f"{vendor_dir}:{src_dir}:" + env.get("PYTHONPATH", "")
 
-            venv_python = os.path.join(project_dir, ".botos", "venv", "bin", "python")
+            venv_python = os.path.join(project_dir, ".bot", "venv", "bin", "python")
             python = venv_python if os.path.isfile(venv_python) else sys.executable
 
             if name in executables:
